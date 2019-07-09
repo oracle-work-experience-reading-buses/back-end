@@ -2,3 +2,4 @@
 modules/data.txt
 data.txt
 data2.txt
+modules/__pycache__/*
