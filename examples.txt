@@ -1,0 +1,152 @@
+STOPS-Stops:
+{
+	"location_code":"030053140001",
+	"bay_no":"",
+	"description":"Hillfoot Cottages adj",
+	"latitude":"51.395877",
+	"longitude":"-1.166315",
+	"route_code":"1",
+	"operator_code":"RGB",
+	"routes":"1\/F20",
+	"bearing":"270",
+	"group_name":"Jet Black"
+},
+LIVEVEHICLES-Buses:
+{
+	"operator":"RGB",
+	"vehicle":"751",
+	"service":"702",
+	"observed":"2019-07-09 14:17:15",
+	"latitude":"51.511311",
+	"longitude":"-0.593371",
+	"bearing":"232"
+},
+LIVEJOURNEY-LiveJourney:
+{
+	"Id":"6426890",
+	"TimetableId":null,
+	"Operator":"RGB",
+	"LineRef":"33",
+	"JourneyPattern":"JP1020",
+	"RunningBoard":"33D",
+	"Duty":"1241",
+	"JourneyCode":"73",
+	"ScheduledStart":"2019-07-09 14:09:00",
+	"VehicleCode":"702",
+	"visits":[
+		{
+			"Location":"039028170003",
+			"LocationName":"Friar Street stop FE",
+			"Sequence":"1",
+			"ArrivalStatus":"H",
+			"DepartureStatus":"P",
+			"ArrivalTime":"2019-07-09 14:05:26",
+			"DepartureTime":"2019-07-09 14:09:13",
+			"ScheduledArrivalTime":null,
+			"ScheduledDepartureTime":"2019-07-09 14:09:00",
+			"TimingPoint":"1",
+			"Lateness":"1",
+			"LatenessSeconds":0
+		},
+	]
+}
+SERVICES-Services:
+{
+	"operator_code":"RGB",
+	"route_code":"1",
+	"group_name":
+	"Jet Black",
+	"id":"1"
+}
+ROUTE-Route:
+{
+	'operator_code': 'RGB',
+	'route_code': '702', '
+	location_code': '039028150004',
+	'location_name': 'Blagrave Street stop EK',
+	'direction': '0',
+	'display_order': '2000'
+},
+
+TIMETABLE-Timetable:
+{
+	"Site":"RTL",
+	"Operator":"RGB",
+	"LineRef":"702",
+	"DepotCode":"RGB",
+	"LocationCode":"039028150004",
+	"LocationName":"Blagrave Street stop EK",
+	"ScheduledStartTime":"2019-07-09 04:34:00",
+	"LiveJourneyId":"0",
+	"Sequence":"1",
+	"RunningBoard":"702A",
+	"Duty":"1961",
+	"Direction":"Outbound",
+	"JourneyCode":"1",
+	"VehicleCode":"",
+	"DriverCode":"",
+	"TimingPoint":"TimingPoint",
+	"JourneyPattern":"JP1348",
+	"ArrivalStatus":"",
+	"DepartureStatus":"",
+	"ScheduledArrivalTime":"2019-07-09 04:34:00",
+	"ScheduledDepartureTime":"2019-07-09 04:34:00",
+	"ArrivalTime":"",
+	"DepartureTime":"",
+	"ScheduledHeadway":"",
+	"ActualHeadway":"",
+	"JourneyId":"7381434",
+	"ServiceGroup":"Greenline",
+	"NumberStops":"56",
+	"StartPoint":"Blagrave Street stop EK",
+	"EndPoint":"Victoria, Colonnades",
+	"Latitude":"51.45799000",
+	"Longitude":"-0.97126167",
+	"District":"Reading",
+	"JourneyType":"TT"
+},
+TRACKINGHISTORY-TrackingHistory:
+{
+	"Site":"RTL",
+	"Operator":"RGB",
+	"LineRef":"702",
+	"DepotCode":"RGB",
+	"LocationCode":"039028150004",
+	"LocationName":"Blagrave Street stop EK",
+	"ScheduledStartTime":"2019-07-08 07:50:00",
+	"LiveJourneyId":"6421535",
+	"Sequence":"1",
+	"RunningBoard":"702D",
+	"Duty":"1964",
+	"Direction":"Outbound",
+	"JourneyCode":"7",
+	"VehicleCode":"751",
+	"DriverCode":"697788",
+	"TimingPoint":"TimingPoint",
+	"JourneyPattern":"JP1348",
+	"ArrivalStatus":"H",
+	"DepartureStatus":"P",
+	"ScheduledArrivalTime":"2019-07-08 07:50:00",
+	"ScheduledDepartureTime":"2019-07-08 07:50:00",
+	"ArrivalTime":"2019-07-08 07:43:52",
+	"DepartureTime":"2019-07-08 07:50:18",
+	"ScheduledHeadway":"",
+	"ActualHeadway":"",
+	"JourneyId":"7378086",
+	"ServiceGroup":"Greenline",
+	"NumberStops":"56",
+	"StartPoint":"Blagrave Street stop EK",
+	"EndPoint":"Victoria, Colonnades",
+	"Latitude":"51.45799000",
+	"Longitude":"-0.97126167",
+	"District":"Reading",
+	"JourneyType":"TT"
+},
+TRACKINGPOSIION-BusesHistory:
+{
+	"operator":"RGB",
+	"vehicle":"751",
+	"observed":"2019-07-08 00:00:52",
+	"latitude":"51.45798",
+	"longitude":"-0.97126"
+}
