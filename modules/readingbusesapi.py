@@ -13,6 +13,10 @@ class ReadingBusesAPI:
             "url" : "https://rtl2.ods-live.co.uk//api/vehiclePositions",
             "args": ["key"],
         },
+        "Route" : {
+            "url" : "https://rtl2.ods-live.co.uk//api/linePatterns",
+            "args": ["key", "service"],
+        },
     }
     def __init__(self, apiKey):
         self.key = apiKey
