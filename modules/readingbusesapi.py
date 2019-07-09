@@ -6,9 +6,6 @@ import requests
 
 # Stop Predictions, Timetabled Journeys, Tracking History, Vehicle Position History
 
-
-
-
 # The Stop prediction returns an xml file, WHAT?
 #
 

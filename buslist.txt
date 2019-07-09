@@ -1,0 +1,1 @@
+[{'operator': 'RGB', 'vehicle': '432', 'service': '2a', 'observed': '2019-07-09 15:35:57', 'latitude': '51.375092', 'longitude': '-1.050324', 'bearing': '98'}]
