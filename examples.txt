@@ -61,8 +61,8 @@ SERVICES-Services:
 ROUTE-Route:
 {
 	'operator_code': 'RGB',
-	'route_code': '702', '
-	location_code': '039028150004',
+	'route_code': '702',
+	'location_code': '039028150004',
 	'location_name': 'Blagrave Street stop EK',
 	'direction': '0',
 	'display_order': '2000'

@@ -6,6 +6,7 @@ import requests
 
 # Stop Predictions, Timetabled Journeys, Tracking History, Vehicle Position History
 
+
 # The Stop prediction returns an xml file, WHAT?
 #
 
@@ -69,3 +70,41 @@ class ReadingBusesAPI:
         else:
             print("Seems like this is not a valid API Call")
             return False
+
+    def RequestTimeTable(self, service, date, busStop):
+        # Service should be sent in like 702, not sure how that relates to number on the bus
+        # Service seems to match for example 2A = 2a so just string upper stuff?
+
+        # The date needs to be in yyyy-mm-dd if it is not in this format we will need to convert it
+        busStops = self.RequestAllStops()
+        busStopNatMap = False
+
+        for i in busStops:
+            if i["description"] == busStop:
+                busStopNatMap = i["location_code"]
+        if busStopNatMap:
+            return self.Call("Timetable", {"location": busStopNatMap, "date": date, "service": service })
+        else:
+            return self.Call("Timetable", {"date": date, "service": service })
+
+    def RequestAllStops(self):
+        # Possibily cache this?
+        return self.Call("Stops", {})
+
+    def RequestBusPositions(self, service = False):
+        busArray = self.Call("Buses", {})
+        if service:
+            busArrayTwo = []
+            for bus in busArray:
+                if bus["service"] == service:
+                    busArrayTwo.append(bus)
+            return busArrayTwo
+        else:
+            return busArray
+
+
+busAPI = ReadingBusesAPI("apiKey")
+data = busAPI.RequestBusPositions("2")
+f = open("buslist2.txt", "w")
+f.write(str(data))
+f.close()
