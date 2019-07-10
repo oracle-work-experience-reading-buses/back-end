@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import face_recognition
+import datetime
 
 if str(input("take photo [y/n]")) == "y":
 
@@ -15,4 +16,5 @@ if str(input("take photo [y/n]")) == "y":
 	face_locations = face_recognition.face_locations(image)
 	
 	#Print number of faces
-	print(len(face_locations))
+	print(str(len(face_locations)) + " Faces Found " + (str(datetime.datetime.now())).split(" ")[0])
+
