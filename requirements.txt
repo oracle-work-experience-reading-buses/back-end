@@ -98,7 +98,7 @@ tensorboard==1.13.1
 tensorflow==1.13.1
 tensorflow-estimator==1.13.0
 termcolor==1.1.0
-Twisted==17.9.0
+Twisted==19.2.1
 ubuntu-drivers-common==0.0.0
 ufw==0.36
 unattended-upgrades==0.1
