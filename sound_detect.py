@@ -10,8 +10,6 @@ from struct import pack
 reference_sound_path = "reference_sound.wav"
 output_sound_path = "recorded_sound.wav"
 
-input_device = 0
-
 _THRESHOLD = 500
 _CHUNK_SIZE = 1024
 _FORMAT = pyaudio.paInt16
@@ -45,10 +43,10 @@ def trim(data):
                 r.append(i)
         return r
     
-#    data = _trim(data)
-#    data.reverse()
-#    data = _trim(data)
-#    data.reverse()
+    data = _trim(data)
+    data.reverse()
+    data = _trim(data)
+    data.reverse()
     
     return data
 
@@ -61,15 +59,14 @@ def add_silence(data, secs):
     return r
     
 def record():
-    global input_device
     global _RATE
     
     p = pyaudio.PyAudio()
     
     input_device = [i for i in range(p.get_device_count()) \
-                    if "USB PnP Audio Device: Audio" \
+                    if "USB PnP Audio Device" \
                     in p.get_device_info_by_index(i).get("name")][0]
-                         
+                       
     if input_device == 0: 
         raise OSError("Could not find USB microphone device")
 
@@ -125,6 +122,3 @@ def record_to_file(path):
         
 if __name__ == "__main__":
     record_to_file(output_sound_path)
-        
-        
-        
