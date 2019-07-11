@@ -1,0 +1,178 @@
+*
+{
+	margin: 0;
+	padding: 0;
+	font-family: comfortaa;
+}
+@font-face {
+  font-family: comfortaa;
+  src: url(../fonts/comfortaa.ttf);
+}
+body
+{
+	font-family: font;
+}
+#navigation-bar
+{
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+.navbar
+{
+	background-image: linear-gradient(to right, #6c5ce7, #6c5ce7);
+	padding: 0 !important;
+}
+.navbar-logo img
+{
+	height: 80px;
+	padding-left: 20px;
+}
+.navbar-text img
+{
+	height: 40px;
+	padding-left: 5px;
+}
+.navbar-nav li
+{
+	padding: 0 10px;
+}
+.navbar-nav li a
+{
+	color: #fff !important;
+	font-weight: 600;
+	float: right;
+	text-align: left;
+}
+.fa-bars
+{
+	color: #fff;
+	font-size: 30px !important;
+}
+.navbar-toggler
+{
+	outline: none !important;
+}
+
+
+#mainbanner
+{
+	background-image: linear-gradient(to right, #6c5ce7, #6c5ce7);
+	color: #fff;
+	padding-top: 5%;
+}
+.maintitle {
+    font-size: 50px;
+    font-weight: 600;
+    margin-top: 34px;
+    text-align: center;
+    text-shadow: 1.5px 1.5px #34495e;
+}
+.maintext
+{
+	text-align: center;
+}
+
+.logomain
+{
+	width: 50px;
+	margin: 15px;
+}
+.text-center
+{
+	float: right;
+}
+
+#mainbanner a
+{
+	color: #fff;
+	text-decoration: none;
+}
+.bottomimg
+{
+	width: 100%;
+}
+button.btn.btn-primary 
+{
+    display: block;
+    max-width: 500px;
+    margin: auto;
+	background-image: linear-gradient(to right, #6c5ce7, #6c5ce7);
+}
+#mainabout
+{
+	background: #f8f9fa;
+	padding-bottom: 50px;
+	padding-top: 50px;
+}
+#mainfooter
+{
+	background-image: linear-gradient(to right, #6c5ce7, #6c5ce7);
+	color: #fff;
+}
+.footerimg
+{
+	width: 100%;
+}
+.footerbox
+{
+	padding: 20px;
+}
+
+.footerbox img
+{
+	width: 120px;
+	margin-bottom: 20px;
+}
+.footerbox .fa
+{
+    margin-right: 8px;
+    font-size: 25px;
+    height: 1px;
+    width: 25px;
+    margin-left: -30px;
+    text-align: center;
+    padding-top: 7px;
+    border-radius: 2px;
+    background-image: linear-gradient(to right, #6c5ce7, #6c5ce7);
+}
+hr
+{
+	background-color: #fff;
+}
+.copyright
+{
+	margin-bottom: 0;
+	padding-bottom: 20px;
+	text-align: center;
+}
+
+a.btn.btn-primary {
+    max-width: 115;
+    display: block;
+    margin: auto;
+}
+.card-title
+{
+	text-align: center;
+}
+
+.card-text
+{
+	text-align: center;
+}
+#buses
+{
+	margin-left: 20px;
+	margin-bottom: 20px;
+}
+
+
+
+
+
+
+
+
+
+
