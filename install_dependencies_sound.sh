@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "NOTE: This script is designed to be ran on Raspberry Pi running the latest version of Raspbian (as of writing this) which is Buster."
+echo "      If you're running this on a different device/operating system, don't expect it to work without modification."
+echo ""
+
 PACKAGES=("libportaudio2" "python3-numpy")
 PIP_PACKAGES=("soundfile" "sounddevice") 
 
