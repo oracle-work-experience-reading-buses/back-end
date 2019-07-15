@@ -3,12 +3,15 @@ import numpy as np
 import requests
 import xmltodict
 from datetime import datetime, timedelta
+from sklearn.externals import joblib
 
-import modules.readingbusesapi as busWrapper
+# import modules.readingbusesapi as busWrapper
+#
+# busAPI = busWrapper.ReadingBusesAPI("hvOtkiqAwK")
 
-busAPI = busWrapper.ReadingBusesAPI("hvOtkiqAwK")
+def predict_times(busAPI, stop_name):
+    model = joblib.load("model.pkl")
 
-def predict_times(busAPI, model, stop_name):
     avg_times = pd.read_csv('avg_time_from_prev_stop.csv', index_col=0)
 
     stops = pd.DataFrame(busAPI.RequestAllStops())
