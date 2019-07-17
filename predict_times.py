@@ -59,15 +59,17 @@ def predict_times(busAPI, stop_name):
                                 for bus in stop_predict_df.LineRef]
     print(stop_predict_df.route)
     stop_predict_df['next_stop'] = [r.location_name[(r[r.location_name == stop_predict_df.last_stop[i]].index + 1) % len(r)].values[0]
-                                    if stop_predict_df.last_stop[i] != 'Not known' else 'Not known'
-                                    for i, r in enumerate(stop_predict_df.route)]
+                                if (stop_predict_df.last_stop[i] != 'Not known' and len(r.location_name[(r[r.location_name == stop_predict_df.last_stop[i]].index + 1) % len(r)]) != 0)
+                                else 'Not known'
+                                for i, r in enumerate(stop_predict_df.route)]
+    stop_predict_df = stop_predict_df.fillna(0)
 
     #get features for the stop
-    features = [predict_to_end(model, avg_times[avg_times.route_code == route], stop_name, next_stop, last_stop_delay, route)
-                if vehicle_code != 0 else None
+    features = [predict_to_end(model, avg_times, stop_name, next_stop, last_stop_delay, route)
+                if (vehicle_code != 0 and next_stop != 'Not known') else (0, avg_times[avg_times.location_name == stop_name].avg_time_from_prev.values[0])
                 for next_stop, last_stop_delay, route, vehicle_code in
                 zip(stop_predict_df.next_stop, stop_predict_df.last_stop_delay, stop_predict_df.route,
-                    stop_predict_df.VehicleRef)]
+                stop_predict_df.VehicleRef)]
 
     predicted_delay = pd.to_timedelta(model.predict(features), unit='s')
     aimed_time = pd.to_datetime(stop_predict_df.AimedArrivalTime)
