@@ -5,7 +5,7 @@ echo "      If you're running this on a different device/operating system, don't
 echo ""
 
 PACKAGES=("libportaudio2" "python3-numpy" "llvm" "cython" "libatlas-base-dev" "libsndfile1-dev" "libsamplerate0-dev" "cimg-dev" "ffmpeg" "libmpg123-dev" "libavcodec58" "libavcodec-extra58" "libavcodec-dev")
-PIP_PACKAGES=("soundfile" "sounddevice" "librosa" "cython" "phash")
+PIP_PACKAGES=("soundfile" "sounddevice" "librosa" "cython" "imagehash")
 SOURCES=("http://mirror.ox.ac.uk/sites/archive.raspbian.org/archive/raspbian/pool/main/libp/libphash/libphash_0.9.4.orig.tar.gz")
 
 echo "---------------------------------------------------"
