@@ -73,7 +73,11 @@ def predict_times(busAPI, stop_name):
     aimed_time = pd.to_datetime(stop_predict_df.AimedArrivalTime)
     print(type((aimed_time+predicted_delay).dt.time))
 
-    return (aimed_time+predicted_delay).dt.time
+    predicted_buses_time = {}
+    for i, (bus_code, time) in enumerate(zip(stop_predict_df.LineRef, (aimed_time + predicted_delay).dt.time)):
+        predicted_buses_time[i] = (bus_code, time.strftime("%H:%M"))
+
+    return predicted_buses_time
 
 
 def predict_to_end(model, avg_times, end_stop, next_stop, last_delay, route):
