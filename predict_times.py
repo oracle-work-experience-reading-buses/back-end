@@ -19,7 +19,7 @@ def predict_times(busAPI, stop_name):
     print("predict 3")
     stops = pd.DataFrame(busAPI.RequestAllStops())
     print("predict 4")
-    stop_code = stops[stops.description == stop_name].location_code.item()
+    stop_code = stops[stops.description == stop_name].location_code.iloc[0]
     print("predict 5")
 
     #get list of buses coming to the stop
