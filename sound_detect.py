@@ -72,12 +72,13 @@ def record():
 
 def get_file_hash(audio_file_path):
     figure = plt.figure()
+    figure.patch.set_visible(False)
 
     image_name = os.path.basename(audio_file_path)[:len(audio_file_path)-4] + "-spectogram.png"
     sample_rate, samples = wavfile.read(audio_file_path)
     plt.specgram(samples, Fs=sample_rate)
     plt.axis("off")
-    figure.savefig(image_name, bbox_inches=0)
+    figure.savefig(image_name)
 
     image = PIL.Image.open(image_name)
     return imagehash.phash(image, hash_size=16)
