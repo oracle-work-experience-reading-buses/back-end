@@ -63,7 +63,7 @@ def predict_times(busAPI, stop_name):
                                     for i, r in enumerate(stop_predict_df.route)]
 
     #get features for the stop
-    features = [predict_to_end(model, avg_times, stop_name, next_stop, last_stop_delay, route)
+    features = [predict_to_end(model, avg_times[avg_times.route_code == route], stop_name, next_stop, last_stop_delay, route)
                 if vehicle_code != 0 else None
                 for next_stop, last_stop_delay, route, vehicle_code in
                 zip(stop_predict_df.next_stop, stop_predict_df.last_stop_delay, stop_predict_df.route,
