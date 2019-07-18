@@ -10,7 +10,7 @@ import oci_file_read as ofr
 #
 # busAPI = busWrapper.ReadingBusesAPI("hvOtkiqAwK")
 
-def predict_times(busAPI, stop_name):
+def predict_times(busAPI, stop_code):
     #model = joblib.load("model.pkl")
     print("predict 1")
     csv_file = ofr.read_csv("avg_time_from_prev_stop.csv")
@@ -19,7 +19,7 @@ def predict_times(busAPI, stop_name):
     print("predict 3")
     stops = pd.DataFrame(busAPI.RequestAllStops())
     print("predict 4")
-    stop_code = stops[stops.description == stop_name].location_code.iloc[0]
+    # stop_code = stops[stops.description == stop_name].location_code.iloc[0]
     print("predict 5")
 
     #get list of buses coming to the stop
