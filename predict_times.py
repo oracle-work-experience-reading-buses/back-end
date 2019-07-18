@@ -11,7 +11,7 @@ import oci_file_read as ofr
 # busAPI = busWrapper.ReadingBusesAPI("hvOtkiqAwK")
 
 def predict_times(busAPI, stop_name):
-    model = joblib.load("model.pkl")
+    #model = joblib.load("model.pkl")
     print("predict 1")
     csv_file = ofr.read_csv("avg_time_from_prev_stop.csv")
     print("predict 2")
@@ -28,8 +28,9 @@ def predict_times(busAPI, stop_name):
     stop_predict = xmltodict.parse(response.content)
     print("predict 5.5")
     df_temp = pd.DataFrame(i['MonitoredVehicleJourney'] for i in stop_predict['Siri']
-                                                                 ['ServiceDelivery']['StopMonitoringDelivery'][
-                                                                     'MonitoredStopVisit'][:5])
+                                                                 ['ServiceDelivery']['StopMonitoringDelivery']
+                                                                 ['MonitoredStopVisit'][:5]
+                           if 'MonitoredStopVisit' in stop_predict['Siri']['ServiceDelivery']['StopMonitoringDelivery'].keys())
     monitored_call_df = pd.DataFrame(i for i in df_temp.MonitoredCall)
     stop_predict_df = pd.DataFrame({'LineRef': df_temp.LineRef,
                                     'VehicleRef': [s[4:] if not isinstance(s, float) else 0 for s in
@@ -66,15 +67,26 @@ def predict_times(busAPI, stop_name):
                                 for i, r in enumerate(stop_predict_df.route)]
     stop_predict_df = stop_predict_df.fillna(0)
 
+    #get the models that are needed
+    models = []
+    for r in stop_predict_df.LineRef:
+        models.append(joblib.load('models/model-' + r + '.pkl'))
+
     #get features for the stop
-    features = [predict_to_end(model, avg_times, stop_code, next_stop, last_stop_delay, route, line_code)
+    features = [predict_to_end(models[line_code], avg_times, stop_code, next_stop, last_stop_delay, route, line_code)
                 if (vehicle_code != 0 and next_stop != 'Not known')
                 else (0, avg_times[avg_times.route_code == line_code][avg_times.location_code == stop_code].avg_time_from_prev)
                 for next_stop, last_stop_delay, route, vehicle_code, line_code in
                 zip(stop_predict_df.next_stop, stop_predict_df.last_stop_delay, stop_predict_df.route,
                     stop_predict_df.VehicleRef, stop_predict_df.LineRef)]
 
-    predicted_delay = pd.to_timedelta(model.predict(features), unit='s')
+    predicted_delay = []
+    for i, model in enumerate(models):
+        predicted_delay.append(model.predict(np.array(features[i]).reshape(1, -1)))
+
+    predicted_delay = [d[0] for d in predicted_delay]
+    predicted_delay = pd.to_timedelta(predicted_delay, unit='s')
+
     aimed_time = pd.to_datetime(stop_predict_df.AimedArrivalTime)
     #print(type((aimed_time+predicted_delay).dt.time))
 
