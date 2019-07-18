@@ -70,7 +70,8 @@ def predict_times(busAPI, stop_name):
     #get the models that are needed
     models = []
     for r in stop_predict_df.LineRef:
-        models.append(joblib.load('models/model-' + r + '.pkl'))
+        m = ofr.read_model('model-' + r + '.pkl')
+        models.append(joblib.load(m))
 
     #get features for the stop
     features = [predict_to_end(models[line_code], avg_times, stop_code, next_stop, last_stop_delay, route, line_code)
