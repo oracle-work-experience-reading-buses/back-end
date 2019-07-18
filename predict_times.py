@@ -11,7 +11,6 @@ import oci_file_read as ofr
 # busAPI = busWrapper.ReadingBusesAPI("hvOtkiqAwK")
 
 def predict_times(busAPI, stop_code):
-    #model = joblib.load("model.pkl")
     print("predict 1")
     csv_file = ofr.read_csv("avg_time_from_prev_stop.csv")
     print("predict 2")
@@ -41,22 +40,15 @@ def predict_times(busAPI, stop_code):
         stop_predict_df = stop_predict_df[stop_predict_df.ArrivalStatus != 'cancelled']
     print("predict 5.6")
     #get the last stop that each bus passed through and the delay at that stop
-    today = datetime.today().strftime('%Y-%m-%d')
-    track_history = [busAPI.Call("TrackingHistory", {"date": today, "vehicle": vehicle})
-                     if vehicle != 0 else None for vehicle in stop_predict_df.VehicleRef]
-    # stop_predict_df['last_stop'] = [getLastStop(vehicle, today, bus_api)
-    # #                                 hist[-1]['LocationName'] if type(hist) is list else "Not known"
-    # #                                 for hist in [bus_api.Call("TrackingHistory", {"date": today, "vehicle": vehicle})
-    #                                if vehicle != 0 else "Not Known" for vehicle in stop_predict_df.VehicleRef]#]
+    last_stop_info = [get_last_stop_info(vehicle_no, route_no, busAPI) for route_no, vehicle_no
+                      in zip(stop_predict_df.LineRef, stop_predict_df.VehicleRef)]
+
+
     print("predict 5.7")
-    stop_predict_df['last_stop'] = [hist[-1]['LocationCode'] if type(hist) is list else "Not known"
-                                    for hist in track_history]
-    stop_predict_df['last_stop_delay'] = [(pd.to_datetime(hist[-1]['DepartureTime']) -
-                                           pd.to_datetime(hist[-1]['ScheduledDepartureTime'])).total_seconds()
-                                          if hist is not None else 0
-                                          for hist in track_history]
-    print(stop_predict_df.last_stop)
-    print(stop_predict_df.last_stop_delay)
+    stop_predict_df['last_stop'] = [stop_info['Location'] for stop_info in last_stop_info]
+    stop_predict_df['last_stop_delay'] = [(pd.to_datetime(stop_info['DepartureTime']) - pd.to_datetime(
+        stop_info['ScheduledDepartureTime'])).total_seconds()
+                                          for stop_info in last_stop_info]
 
     print("predict 6")
     #get the next stop that each bus will go to
@@ -88,8 +80,6 @@ def predict_times(busAPI, stop_code):
                 zip(stop_predict_df.next_stop, stop_predict_df.last_stop_delay, stop_predict_df.route,
                     stop_predict_df.VehicleRef, stop_predict_df.LineRef, models)]
 
-    
-
     predicted_delay = []
     for i, model in enumerate(models):
         print(features[i], type(features[i]))
@@ -109,6 +99,23 @@ def predict_times(busAPI, stop_code):
 
     return predicted_buses_time
 
+def get_last_stop_info(vehicle_code, route_no, api):
+    hist = api.Call("LiveJourney", {"vehicle": vehicle_code, "route": route_no})
+    next_stop_id = 0
+    if type(hist) is list:
+        visits = hist[0]['visits']
+    else:
+        visits = hist['visits']
+    for visit in visits:
+#         display(visit)
+        if visit['DepartureStatus'] == 'E':
+            next_stop_id = visits.index(visit)
+#             display(next_stop_id)
+            break
+    if next_stop_id == 0:
+        return visits[0]
+    else:
+        return visits[next_stop_id - 1]
 
 def predict_to_end(model, avg_times, end_stop, next_stop, last_delay, route, route_code):
     # print('--------------------------------------')
