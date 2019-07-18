@@ -74,18 +74,18 @@ def predict_times(busAPI, stop_name):
         models.append(joblib.load(m))
 
     #get features for the stop
-    features = [predict_to_end(models[line_code], avg_times, stop_code, next_stop, last_stop_delay, route, line_code)
+    features = [predict_to_end(model, avg_times, stop_code, next_stop, last_stop_delay, route, line_code)
                 if (vehicle_code != 0 and next_stop != 'Not known')
                 else (0, avg_times[avg_times.route_code == line_code][avg_times.location_code == stop_code].avg_time_from_prev)
-                for next_stop, last_stop_delay, route, vehicle_code, line_code in
+                for next_stop, last_stop_delay, route, vehicle_code, line_code, model in
                 zip(stop_predict_df.next_stop, stop_predict_df.last_stop_delay, stop_predict_df.route,
-                    stop_predict_df.VehicleRef, stop_predict_df.LineRef)]
+                    stop_predict_df.VehicleRef, stop_predict_df.LineRef, models)]
 
     predicted_delay = []
     for i, model in enumerate(models):
-        predicted_delay.append(model.predict(np.array(features[i]).reshape(1, -1)))
+        predicted_delay.append(model.predict(np.array(features[i]).reshape(1, -1))[0])
 
-    predicted_delay = [d[0] for d in predicted_delay]
+    # predicted_delay = [d[0] for d in predicted_delay]
     predicted_delay = pd.to_timedelta(predicted_delay, unit='s')
 
     aimed_time = pd.to_datetime(stop_predict_df.AimedArrivalTime)
