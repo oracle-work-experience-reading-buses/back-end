@@ -1,10 +1,13 @@
+# Miscellaneous modules
 import asyncio
 import contextlib
+import json
+import requests
+from datetime import datetime
 
 # Modules for recording audio
 import sounddevice as sd
 import soundfile as sf
-import wave
 
 # Modules for reading and comparing audio
 import os
@@ -13,6 +16,11 @@ from scipy.io import wavfile
 import imagehash
 import PIL
 import pickle
+
+# Modules for both reading / writing audio
+import wave
+
+amount_of_people = 0
 
 prev_files = {}
 
@@ -34,41 +42,22 @@ with contextlib.closing(wave.open("reference_sound.wav", "r")) as ref_file:
             "duration" : ref_file.getnframes() / float(ref_file.getframerate())
     }
 
-def record():
-    counter = 1
-    while True:
-        if len(prev_files) >= 3:
-            print("Creating \"test_for_beep.wav\"...")
-            infiles = [prev_files[_file] for key,_file \
-                       in enumerate(prev_files)]
-            outfile = "test_for_beep.wav"
+def record(counter):
+    file_name = f"recorded_sound-{counter}.wav"
 
-            data = []
-            for infile in infiles:
-                w = wave.open(infile, "rb")
-                data.append([w.getparams(), w.readframes(w.getnframes())])
-                w.close()
-            
-            output = wave.open(outfile, "wb")
-            output.setparams(data[0][0])
-            output.writeframes(data[0][1])
-            output.writeframes(data[1][1])
-            output.writeframes(data[2][1])
-            output.close()
-        if len(prev_files) > 3:
-            os.remove(f"recorded_sound-{counter-4}.wav")
-            prev_files.pop(counter-4, None)
+    if len(prev_files) > 3:
+        os.remove(f"recorded_sound-{counter-4}.wav")
+        prev_files.pop(counter-4, None)
 
-        file_name = f"recorded_sound-{counter}.wav"
 
-        sample_rate = 44100
-        duration = reference_data["duration"] 
-        recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
-        sd.wait()
+    sample_rate = 44100
+    duration = reference_data["duration"] 
+    recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
+    sd.wait()
 
-        sf.write(file_name, recording, sample_rate)
-        prev_files[counter] = file_name
-        counter += 1
+    sf.write(file_name, recording, sample_rate)
+    prev_files[counter] = file_name
+    return file_name
 
 def get_file_hash(audio_file_path):
     figure = plt.figure()
@@ -76,22 +65,56 @@ def get_file_hash(audio_file_path):
 
     image_name = os.path.basename(audio_file_path)[:len(audio_file_path)-4] + "-spectogram.png"
     sample_rate, samples = wavfile.read(audio_file_path)
+
     plt.specgram(samples, Fs=sample_rate)
     plt.axis("off")
     figure.savefig(image_name)
 
+    plt.close(figure)
+
     image = PIL.Image.open(image_name)
-    return imagehash.phash(image, hash_size=16)
+    img_hash = imagehash.phash(image, hash_size=8)
+
+    os.remove(image_name)
+    return img_hash
 
 def compare_with_reference(audio_file_path):
+    global amount_of_people
+
     reference_hash = reference_data["hash"]
     sound_hash = get_file_hash(audio_file_path)
 
-    print(f"Reference hash: {reference_hash}")
+    print(f"\nReference hash: {reference_hash}")
     print(f"{os.path.basename(audio_file_path)}'s hash: {sound_hash}")
+    print(f"Amount of people: {amount_of_people}")
+
+    if sound_hash == reference_hash: 
+        amount_of_people += 1
+        send_data()
+        return True
+    else: return False
+
+def send_data():
+    data = {
+            "bus_no" : "422",
+            "bus_route" : "2a",
+            "people_count" : amount_of_people,
+            "time" : datetime.now().strftime("%Y-%m-%d %T")
+    }
+
+    url = "http://reading-buses.cf/set_people"
+    request = requests.post(url=url, data=data, verify=False)
+    print(request.text)
+
 
 def main():
-    compare_with_reference("recorded_sound-9.wav")
+    prev_file_name = "recorded_sound-0.wav"
+    current_file_name = "recorded_sound-1.wav"
+    cnt = 1
 
+    while current_file_name != prev_file_name:
+        current_file_name = record(cnt)
+        compare_with_reference(current_file_name)
+        cnt += 1
 
 main()

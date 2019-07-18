@@ -5,7 +5,7 @@ echo "      If you're running this on a different device/operating system, don't
 echo ""
 
 PACKAGES=("libportaudio2" "python3-numpy" "llvm" "cython" "libatlas-base-dev" "libsndfile1-dev" "libsamplerate0-dev" "cimg-dev" "ffmpeg" "libmpg123-dev" "libavcodec58" "libavcodec-extra58" "libavcodec-dev")
-PIP_PACKAGES=("soundfile" "sounddevice" "librosa" "cython" "imagehash")
+PIP_PACKAGES=("soundfile" "sounddevice" "librosa" "cython" "imagehash" "requests")
 SOURCES=("http://mirror.ox.ac.uk/sites/archive.raspbian.org/archive/raspbian/pool/main/libp/libphash/libphash_0.9.4.orig.tar.gz")
 
 echo "---------------------------------------------------"
@@ -40,25 +40,25 @@ echo "---------------------------------------------------"
 # library.
 
 for _source_url in "${SOURCES[@]}"; do
-		echo "Downloading \"$_source_url\"..."
-		file_name="${_source_url##*/}"
-		dir_name=$(echo "$file_name" | sed 's/\(\.orig\.tar\.gz\)//g' | sed 's/\(lib\)//g' | sed 's/_/-/g' | sed 's/h/H/')
-		curl "$_source_url" -o "$file_name"
-		echo "Extracting \"$file_name\"..."
-		tar -xvf "$file_name"
-		echo "Compiling \"$dir_name\"..."
-		cd "$dir_name"
-		./configure --enable-video-hash=no && sudo make install
-		cd ..
-		exit_code="$?"
-		if [[ "$exit_code" == "0" ]]; then
-			echo "Compiled successfully!"
-		else
-			echo "Complimation failed."
-		fi
-		rm "$file_name"
-		sudo rm -rf "$dir_name"
-		echo ""
+	echo "Downloading \"$_source_url\"..."
+	file_name="${_source_url##*/}"
+	dir_name=$(echo "$file_name" | sed 's/\(\.orig\.tar\.gz\)//g' | sed 's/\(lib\)//g' | sed 's/_/-/g' | sed 's/h/H/')
+	curl "$_source_url" -o "$file_name"
+	echo "Extracting \"$file_name\"..."
+	tar -xvf "$file_name"
+	echo "Compiling \"$dir_name\"..."
+	cd "$dir_name"
+	./configure --enable-video-hash=no && sudo make install
+	cd ..
+	exit_code="$?"
+	if [[ "$exit_code" == "0" ]]; then
+		echo "Compiled successfully!"
+	else
+		echo "Complimation failed."
+	fi
+	rm "$file_name"
+	sudo rm -rf "$dir_name"
+	echo ""
 done
 
 
