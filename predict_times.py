@@ -49,12 +49,14 @@ def predict_times(busAPI, stop_name):
     # #                                 for hist in [bus_api.Call("TrackingHistory", {"date": today, "vehicle": vehicle})
     #                                if vehicle != 0 else "Not Known" for vehicle in stop_predict_df.VehicleRef]#]
     print("predict 5.7")
-    stop_predict_df['last_stop'] = [hist[-1]['LocationName'] if type(hist) is list else "Not known"
+    stop_predict_df['last_stop'] = [hist[-1]['LocationCode'] if type(hist) is list else "Not known"
                                     for hist in track_history]
     stop_predict_df['last_stop_delay'] = [(pd.to_datetime(hist[-1]['DepartureTime']) -
                                            pd.to_datetime(hist[-1]['ScheduledDepartureTime'])).total_seconds()
                                           if hist is not None else 0
                                           for hist in track_history]
+    print(stop_predict_df.last_stop)
+    print(stop_predict_df.last_stop_delay)
 
     print("predict 6")
     #get the next stop that each bus will go to
@@ -67,11 +69,16 @@ def predict_times(busAPI, stop_name):
                                 for i, r in enumerate(stop_predict_df.route)]
     stop_predict_df = stop_predict_df.fillna(0)
 
+    print(stop_predict_df.next_stop)
+
     #get the models that are needed
     models = []
     for r in stop_predict_df.LineRef:
         m = ofr.read_model('model-' + r + '.pkl')
         models.append(joblib.load(m))
+
+    print(stop_predict_df.VehicleRef)
+    print(stop_predict_df.next_stop)
 
     #get features for the stop
     features = [predict_to_end(model, avg_times, stop_code, next_stop, last_stop_delay, route, line_code)
@@ -81,9 +88,14 @@ def predict_times(busAPI, stop_name):
                 zip(stop_predict_df.next_stop, stop_predict_df.last_stop_delay, stop_predict_df.route,
                     stop_predict_df.VehicleRef, stop_predict_df.LineRef, models)]
 
+    
+
     predicted_delay = []
     for i, model in enumerate(models):
-        predicted_delay.append(model.predict(np.array(features[i]).reshape(1, -1))[0])
+        print(features[i], type(features[i]))
+        val = model.predict(np.array(features[i]).reshape(1, -1))[0]
+        print(type(val))
+        predicted_delay.append(val)
 
     # predicted_delay = [d[0] for d in predicted_delay]
     predicted_delay = pd.to_timedelta(predicted_delay, unit='s')
