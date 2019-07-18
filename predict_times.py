@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import requests
+import requests, re
 import xmltodict
 from datetime import datetime, timedelta
 from sklearn.externals import joblib
@@ -25,19 +25,31 @@ def predict_times(busAPI, stop_code):
     url = "https://rtl2.ods-live.co.uk//api/siri/sm?key=hvOtkiqAwK&location=" + stop_code
     response = requests.get(url)
     stop_predict = xmltodict.parse(response.content)
-    print("predict 5.5")
-    df_temp = pd.DataFrame(i['MonitoredVehicleJourney'] for i in stop_predict['Siri']
-                                                                 ['ServiceDelivery']['StopMonitoringDelivery']
-                                                                 ['MonitoredStopVisit'][:5]
-                           if 'MonitoredStopVisit' in stop_predict['Siri']['ServiceDelivery']['StopMonitoringDelivery'].keys())
+    print(type(stop_predict['Siri']['ServiceDelivery']['StopMonitoringDelivery']))
+    if 'MonitoredStopVisit' in stop_predict['Siri']['ServiceDelivery']['StopMonitoringDelivery'].keys() and len(
+            stop_predict['Siri']['ServiceDelivery']['StopMonitoringDelivery']) > 1:
+        df_temp = pd.DataFrame(i['MonitoredVehicleJourney'] for i in stop_predict['Siri']
+                                                                     ['ServiceDelivery']['StopMonitoringDelivery'][
+                                                                         'MonitoredStopVisit'][:5])
+    else:
+        df_temp = pd.DataFrame()
+        return {0: (0,0)}
+
     monitored_call_df = pd.DataFrame(i for i in df_temp.MonitoredCall)
+
     stop_predict_df = pd.DataFrame({'LineRef': df_temp.LineRef,
-                                    'VehicleRef': [s[4:] if not isinstance(s, float) else 0 for s in
-                                                   df_temp.VehicleRef]})
+                                    'VehicleRef': [re.findall('\d+', str(s)) if s != 'NaN' else None for s in
+                                                   df_temp.VehicleRef],
+                                    'Direction': ['0' if direction == 'outbound' else '1' for direction in
+                                                  df_temp.DirectionRef]})
+    stop_predict_df['VehicleRef'] = [ref[0] if len(ref) > 0 else None for ref in stop_predict_df.VehicleRef]
+    stop_predict_df = stop_predict_df.loc[stop_predict_df.VehicleRef.notnull()]
+
     stop_predict_df = stop_predict_df.join(monitored_call_df)
     stop_predict_df = stop_predict_df[stop_predict_df.ExpectedArrivalTime != 'cancelled']
     if 'ArrivalStatus' in stop_predict_df.columns:
         stop_predict_df = stop_predict_df[stop_predict_df.ArrivalStatus != 'cancelled']
+
     print("predict 5.6")
     #get the last stop that each bus passed through and the delay at that stop
     last_stop_info = [get_last_stop_info(vehicle_no, route_no, busAPI) for route_no, vehicle_no
@@ -46,8 +58,8 @@ def predict_times(busAPI, stop_code):
 
     print("predict 5.7")
     stop_predict_df['last_stop'] = [stop_info['Location'] for stop_info in last_stop_info]
-    stop_predict_df['last_stop_delay'] = [(pd.to_datetime(stop_info['DepartureTime']) - pd.to_datetime(
-        stop_info['ScheduledDepartureTime'])).total_seconds()
+    stop_predict_df['last_stop_delay'] = [(pd.to_datetime(stop_info['DepartureTime']) -
+                                           pd.to_datetime(stop_info['ScheduledDepartureTime'])).total_seconds()
                                           for stop_info in last_stop_info]
 
     print("predict 6")
@@ -56,21 +68,25 @@ def predict_times(busAPI, stop_code):
                                 for bus in stop_predict_df.LineRef]
     #print(stop_predict_df.route)
     stop_predict_df['next_stop'] = [r.location_code[(r[r.location_code == stop_predict_df.last_stop[i]].index + 1) % len(r)].values[0]
-                                if (stop_predict_df.last_stop[i] != 'Not known' and len(r.location_code[(r[r.location_code == stop_predict_df.last_stop[i]].index + 1) % len(r)]) != 0)
-                                else 'Not known'
+                                if (stop_predict_df.last_stop[i] != None and len(r.location_code[(r[r.location_code == stop_predict_df.last_stop[i]].index + 1) % len(r)]) != 0)
+                                else None
                                 for i, r in enumerate(stop_predict_df.route)]
     stop_predict_df = stop_predict_df.fillna(0)
 
-    print(stop_predict_df.next_stop)
+    # print(stop_predict_df.next_stop)
 
     #get the models that are needed
     models = []
     for r in stop_predict_df.LineRef:
-        m = ofr.read_model('model-' + r + '.pkl')
-        models.append(joblib.load(m))
+        try:
+            m = ofr.read_model('model-' + r + '.pkl')
+            models.append(joblib.load(m))
+        except IOError:
+            m = ofr.read_model('model-17.pkl')
+            models.append(joblib.load(m))
 
-    print(stop_predict_df.VehicleRef)
-    print(stop_predict_df.next_stop)
+    # print(stop_predict_df.VehicleRef)
+    # print(stop_predict_df.next_stop)
 
     #get features for the stop
     features = [predict_to_end(model, avg_times, stop_code, next_stop, last_stop_delay, route, line_code)
