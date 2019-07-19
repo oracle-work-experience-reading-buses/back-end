@@ -72,7 +72,7 @@ def get_file_hash(audio_file_path):
 
     plt.close(figure)
 
-    image = PIL.Image.open(image_name)
+    image = PIL.Image.open(image_name).convert("LA").resize((16,16), PIL.Image.ANTIALIAS)
     img_hash = imagehash.phash(image, hash_size=8)
 
     os.remove(image_name)
