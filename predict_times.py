@@ -121,8 +121,10 @@ def get_last_stop_info(vehicle_code, route_no, api):
     next_stop_id = 0
     if type(hist) is list:
         visits = hist[0]['visits']
-    else:
+    elif 'visits' in hist.keys():
         visits = hist['visits']
+    else:
+        return None
     for visit in visits:
 #         display(visit)
         if visit['DepartureStatus'] == 'E':
