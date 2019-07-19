@@ -61,6 +61,7 @@ def predict_times(busAPI, stop_code):
     stop_predict_df['last_stop_delay'] = [(pd.to_datetime(stop_info['DepartureTime']) -
                                            pd.to_datetime(stop_info['ScheduledDepartureTime'])).total_seconds()
                                           for stop_info in last_stop_info]
+    stop_predict_df = stop_predict_df.reset_index()
 
     print("predict 6")
     #get the next stop that each bus will go to
